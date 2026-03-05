@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from PIL import Image
 import io
-from app.predict import predict_image
+from backend.app.predict import predict_image
 
 app = FastAPI()
 
@@ -18,3 +18,4 @@ async def classify(file: UploadFile = File(...)):
     result = predict_image(image)
 
     return result
+
