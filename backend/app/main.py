@@ -7,11 +7,11 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-    return {"message": "Image classification backend running"}
+    return {"message": "Backend running"}
 
 @app.post("/classify")
 async def classify(file: UploadFile = File(...)):
-
+    
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
 
