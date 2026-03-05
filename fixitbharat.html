@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FixItBharat — नागरिक शिकायत पोर्टल</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--saffron:#FF6B00;--saffron-light:#FF8C00;--saffron-pale:#FFF3E8;--green:#138808;--green-light:#1aad0a;--green-pale:#e8f5e9;--navy:#000080;--navy-light:#1a1a9e;--white:#FFF;--gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#E9ECEF;--gray-300:#DEE2E6;--gray-500:#ADB5BD;--gray-700:#495057;--gray-900:#212529;--shadow:0 4px 24px rgba(0,0,0,.08);--shadow-lg:0 8px 40px rgba(0,0,0,.14);--radius:16px;--radius-sm:8px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh;}
+.hidden{display:none!important;}
+.top-stripe{height:5px;background:linear-gradient(to right,var(--saffron) 33.3%,#fff 33.3%,#fff 66.6%,var(--green) 66.6%);}
+.nav{background:var(--white);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.06);position:sticky;top:0;z-index:100;}
+.logo{font-family:'Baloo 2',cursive;font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--saffron),var(--navy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo span{-webkit-text-fill-color:var(--green);}
+.nav-tagline{font-size:11px;color:var(--gray-500);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.nav-user{display:flex;align-items:center;gap:8px;padding:6px 16px;background:var(--gray-100);border-radius:50px;font-size:13px;font-weight:600;}
+.avatar{width:28px;height:28px;background:linear-gradient(135deg,var(--saffron),var(--navy));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;}
+.btn{padding:12px 28px;border:none;border-radius:50px;font-family:'Noto Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--saffron),var(--saffron-light));color:#fff;box-shadow:0 4px 16px rgba(255,107,0,.3);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,0,.4);}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700);border:1.5px solid var(--gray-200);}
+.btn-secondary:hover{background:var(--gray-200);}
+.btn-sm{padding:8px 18px;font-size:12px;}
+.btn-logout{background:transparent;color:var(--gray-700);border:1.5px solid var(--gray-300);padding:8px 18px;font-size:13px;}
+.input-group{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+label{font-size:13px;font-weight:600;color:var(--gray-700);}
+input[type=text],input[type=password],textarea,select{padding:12px 16px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-family:'Noto Sans',sans-serif;font-size:14px;color:var(--gray-900);background:var(--white);transition:border-color .2s,box-shadow .2s;outline:none;width:100%;}
+input:focus,textarea:focus,select:focus{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(255,107,0,.12);}
+textarea{resize:vertical;min-height:110px;}
+.page{display:none;}.page.active{display:block;}
+.login-wrap{min-height:calc(100vh - 80px);display:flex;align-items:center;justify-content:center;padding:40px 20px;background:linear-gradient(135deg,#fff8f3 0%,#f0f4ff 50%,#f0fff0 100%);}
+.login-box{background:#fff;border-radius:24px;padding:48px 40px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.1);}
+.login-emblem{width:72px;height:72px;background:linear-gradient(135deg,var(--saffron),var(--navy));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;}
+.login-title{font-family:'Baloo 2',cursive;font-size:28px;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--saffron),var(--navy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.login-subtitle{text-align:center;font-size:13px;color:var(--gray-500);margin-bottom:32px;margin-top:4px;}
+.aadhar-format{display:flex;gap:8px;align-items:center;}
+.aadhar-part{flex:1;text-align:center;letter-spacing:3px;font-size:16px;font-weight:600;padding:12px 4px!important;}
+.aadhar-dash{color:var(--gray-300);font-size:20px;}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--gray-500);font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--gray-200);}
+.test-ids-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:12px;max-height:190px;overflow-y:auto;}
+.test-id-row{display:flex;justify-content:space-between;padding:7px 10px;border-radius:6px;cursor:pointer;transition:background .15s;font-family:monospace;font-size:13px;}
+.test-id-row:hover{background:var(--saffron-pale);}
+.badge-v{background:var(--green-pale);color:var(--green);padding:2px 8px;border-radius:50px;font-size:10px;font-weight:600;}
+.error-msg{background:#FFF0F0;border:1px solid #FFB3B3;color:#CC0000;padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:16px;}
+.success-msg{background:var(--green-pale);border:1px solid #A5D6A7;color:var(--green);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:16px;}
+.app-layout{display:flex;min-height:calc(100vh - 80px);}
+.sidebar{width:240px;min-width:240px;background:var(--white);padding:24px 16px;box-shadow:2px 0 12px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:4px;}
+.sidebar-section{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray-500);padding:8px 12px 4px;margin-top:8px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--gray-700);cursor:pointer;transition:all .15s;border:none;background:none;text-align:left;width:100%;}
+.sidebar-item:hover{background:var(--gray-100);}
+.sidebar-item.active{background:var(--saffron-pale);color:var(--saffron);font-weight:600;}
+.sidebar-item .icon{font-size:16px;width:20px;text-align:center;}
+.main-content{flex:1;padding:32px;overflow-y:auto;}
+.page-header{margin-bottom:28px;}
+.page-title{font-family:'Baloo 2',cursive;font-size:28px;font-weight:700;}
+.page-subtitle{color:var(--gray-500);font-size:14px;margin-top:4px;}
+.section-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray-500);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--gray-100);}
+.card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+/* stat */
+.stat-card{background:var(--white);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card.orange::before{background:var(--saffron);}.stat-card.green::before{background:var(--green);}.stat-card.blue::before{background:var(--navy);}.stat-card.red::before{background:#DC2626;}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.stat-icon.orange{background:var(--saffron-pale);}.stat-icon.green{background:var(--green-pale);}.stat-icon.blue{background:#EEF2FF;}.stat-icon.red{background:#FEF2F2;}
+.stat-value{font-family:'Baloo 2',cursive;font-size:30px;font-weight:800;line-height:1;}
+.stat-label{font-size:12px;color:var(--gray-500);margin-top:3px;font-weight:500;}
+/* form */
+.complaint-form{max-width:720px;}
+.problem-types{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+.type-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:2px solid var(--gray-200);border-radius:12px;background:var(--white);cursor:pointer;transition:all .2s;font-size:11px;font-weight:600;color:var(--gray-500);text-align:center;}
+.type-btn:hover{border-color:var(--saffron);color:var(--saffron);}
+.type-btn.selected{border-color:var(--saffron);background:var(--saffron-pale);color:var(--saffron);}
+.upload-zone{border:2px dashed var(--gray-300);border-radius:var(--radius-sm);padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray-50);}
+.upload-zone:hover{border-color:var(--saffron);background:var(--saffron-pale);}
+.preview-img{width:100%;max-height:220px;object-fit:cover;border-radius:var(--radius-sm);margin-top:12px;border:2px solid var(--gray-200);}
+.location-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);}
+.location-text{flex:1;font-size:13px;color:var(--gray-700);}
+.ministry-pill{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;margin-top:4px;}
+/* issue cards */
+.issue-card{background:var(--white);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);margin-bottom:18px;border-left:4px solid transparent;transition:box-shadow .2s,transform .2s;}
+.issue-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.issue-card.critical{border-left-color:#DC2626;}.issue-card.high{border-left-color:var(--saffron);}.issue-card.medium{border-left-color:#F59E0B;}.issue-card.low{border-left-color:var(--green);}
+.issue-title{font-weight:700;font-size:15px;}
+.issue-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px;font-size:12px;color:var(--gray-500);}
+.issue-meta span{display:flex;align-items:center;gap:3px;}
+.priority-badge{padding:4px 12px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.priority-badge.critical{background:#FEF2F2;color:#DC2626;}.priority-badge.high{background:#FFF7ED;color:var(--saffron);}.priority-badge.medium{background:#FFFBEB;color:#D97706;}.priority-badge.low{background:#F0FDF4;color:var(--green);}
+/* ─── UPVOTE BUTTON ─── */
+.upvote-section{display:flex;align-items:center;gap:16px;margin-top:18px;padding:14px 16px;background:var(--gray-50);border-radius:14px;border:1.5px solid var(--gray-200);}
+.upvote-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:68px;height:68px;border:2.5px solid var(--gray-200);border-radius:16px;background:#fff;cursor:pointer;transition:all .2s;flex-shrink:0;padding:6px;}
+.upvote-btn:hover{border-color:var(--saffron);background:var(--saffron-pale);transform:scale(1.05);}
+.upvote-btn.voted{border-color:var(--saffron);background:var(--saffron);}
+.up-arrow{font-size:22px;line-height:1;}
+.up-count{font-family:'Baloo 2',cursive;font-size:19px;font-weight:800;color:var(--gray-900);line-height:1;}
+.upvote-btn.voted .up-count{color:#fff;}
+.up-label{font-size:9px;font-weight:700;color:var(--gray-500);letter-spacing:.5px;}
+.upvote-btn.voted .up-label{color:rgba(255,255,255,.8);}
+.vote-info-title{font-size:13px;font-weight:700;}
+.vote-info-sub{font-size:11px;color:var(--gray-500);margin-top:3px;line-height:1.5;}
+.vote-cta{font-size:11px;color:var(--saffron);font-weight:600;margin-top:5px;}
+/* ─── PROGRESS TRACKER ─── */
+.progress-tracker{margin-top:18px;border:1.5px solid var(--gray-200);border-radius:16px;overflow:hidden;}
+.pt-topbar{padding:14px 18px;background:linear-gradient(to right,var(--gray-50),#fff);border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;}
+.pt-topbar-title{font-size:12px;font-weight:700;color:var(--gray-700);letter-spacing:.5px;text-transform:uppercase;}
+.pt-eta{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;border-radius:50px;font-size:12px;font-weight:700;}
+.pt-eta.live{background:#FFF7ED;color:var(--saffron);}.pt-eta.done{background:var(--green-pale);color:var(--green);}
+/* big bar */
+.pt-bar-section{padding:14px 18px 8px;background:#fff;}
+.pt-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--gray-500);margin-bottom:5px;}
+.pt-bar-track{height:12px;background:var(--gray-100);border-radius:50px;overflow:hidden;position:relative;}
+.pt-bar-fill{height:100%;border-radius:50px;transition:width 1.2s ease;position:relative;overflow:hidden;}
+.pt-bar-fill::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:barShimmer 2.5s infinite;}
+@keyframes barShimmer{0%{left:-100%}100%{left:100%}}
+/* stage track */
+.pt-stages-row{padding:18px 18px 6px;background:#fff;display:flex;gap:0;}
+.pt-st{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+.pt-st::before{content:'';position:absolute;top:14px;left:-50%;right:50%;height:3px;background:var(--gray-200);z-index:0;}
+.pt-st:first-child::before{display:none;}
+.pt-st.s-done::before,.pt-st.s-active::before{background:var(--green);}
+.pt-st-dot{width:30px;height:30px;border-radius:50%;border:3px solid var(--gray-200);background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;z-index:1;transition:all .3s;}
+.pt-st.s-done .pt-st-dot{border-color:var(--green);background:var(--green);}
+.pt-st.s-active .pt-st-dot{border-color:var(--saffron);background:var(--saffron);animation:stagePulse 1.5s infinite;}
+@keyframes stagePulse{0%,100%{box-shadow:0 0 0 4px rgba(255,107,0,.2)}50%{box-shadow:0 0 0 9px rgba(255,107,0,0)}}
+.pt-st-name{font-size:9px;font-weight:600;text-align:center;margin-top:5px;color:var(--gray-500);line-height:1.3;}
+.pt-st.s-done .pt-st-name{color:var(--green);}
+.pt-st.s-active .pt-st-name{color:var(--saffron);}
+.pt-st-date{font-size:8px;color:var(--gray-400);margin-top:1px;text-align:center;}
+/* detail rows */
+.pt-details{padding:12px 16px 16px;background:#fafafa;border-top:1px solid var(--gray-100);display:flex;flex-direction:column;gap:6px;}
+.pt-row{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border-radius:10px;}
+.pt-row.r-done{background:var(--green-pale);}
+.pt-row.r-active{background:#FFF7ED;border:1px solid #FDDCB5;}
+.pt-row.r-pending{background:#fff;border:1px dashed var(--gray-200);}
+.pt-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.pt-dot.d-done{background:var(--green);}.pt-dot.d-active{background:var(--saffron);}.pt-dot.d-pending{background:var(--gray-300);}
+.pt-row-title{font-size:12px;font-weight:700;}
+.r-done .pt-row-title{color:#166534;}.r-active .pt-row-title{color:#92400E;}.r-pending .pt-row-title{color:var(--gray-500);}
+.pt-row-desc{font-size:11px;color:var(--gray-500);margin-top:2px;line-height:1.4;}
+.pt-row-time{font-size:10px;font-weight:700;margin-left:auto;flex-shrink:0;padding:2px 9px;border-radius:50px;}
+.r-done .pt-row-time{background:var(--green-pale);color:var(--green);}
+.r-active .pt-row-time{background:#FFF7ED;color:var(--saffron);}
+.r-pending .pt-row-time{background:var(--gray-100);color:var(--gray-500);}
+/* verified badge */
+.verified-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:var(--green-pale);color:var(--green);border-radius:50px;font-size:10px;font-weight:700;margin-top:4px;}
+/* filter */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-chip{padding:6px 16px;border-radius:50px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);transition:all .15s;}
+.filter-chip:hover,.filter-chip.active{border-color:var(--saffron);color:var(--saffron);background:var(--saffron-pale);}
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray-500);}
+.empty-icon{font-size:56px;margin-bottom:16px;}
+.empty-title{font-size:18px;font-weight:600;color:var(--gray-700);margin-bottom:8px;}
+.toast{position:fixed;top:100px;right:24px;background:#fff;border-radius:10px;padding:14px 20px;box-shadow:var(--shadow-lg);border-left:4px solid var(--green);font-size:14px;z-index:1000;display:flex;align-items:center;gap:10px;transform:translateX(130%);transition:transform .3s;max-width:320px;}
+.toast.show{transform:translateX(0);}
+.ministry-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.ministry-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--gray-100);}
+.ministry-icon-big{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.ministry-name{font-weight:700;font-size:14px;}.ministry-dept{font-size:11px;color:var(--gray-500);margin-top:2px;}
+.mini-bar-track{height:7px;background:var(--gray-100);border-radius:50px;overflow:hidden;margin-top:4px;}
+.mini-bar-fill{height:100%;border-radius:50px;}
+.notif-dot{width:8px;height:8px;background:#DC2626;border-radius:50%;display:inline-block;margin-left:4px;animation:nd 1.5s infinite;}
+@keyframes nd{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .4s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.slide-up{animation:slideUp .5s ease;}
+@media(max-width:900px){.grid-4{grid-template-columns:1fr 1fr;}.sidebar{display:none;}.problem-types{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.main-content{padding:18px;}.login-box{padding:28px 20px;}.grid-2{grid-template-columns:1fr;}.problem-types{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="top-stripe"></div>
+<div class="toast" id="toast"><span id="ti">✅</span><span id="tt">Done</span></div>
+
+<nav class="nav">
+  <div>
+    <div class="logo">FixIt<span>Bharat</span></div>
+    <div class="nav-tagline">नागरिक शिकायत पोर्टल · Citizen Issue Tracker</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px" id="nav-auth"></div>
+</nav>
+
+<!-- ════ LOGIN ════ -->
+<div id="page-login" class="page active">
+<div class="login-wrap">
+<div class="login-box slide-up">
+  <div class="login-emblem">🇮🇳</div>
+  <div class="login-title">FixItBharat</div>
+  <div class="login-subtitle">नागरिक शिकायत पोर्टल — Secure Aadhaar Login</div>
+  <div id="lerr" class="error-msg hidden"></div>
+  <div id="lsuc" class="success-msg hidden"></div>
+  <div class="input-group">
+    <label>Aadhaar Number</label>
+    <div class="aadhar-format">
+      <input class="aadhar-part" id="a1" type="text" maxlength="4" placeholder="XXXX" oninput="an(this,'a2')"/>
+      <span class="aadhar-dash">—</span>
+      <input class="aadhar-part" id="a2" type="text" maxlength="4" placeholder="XXXX" oninput="an(this,'a3')"/>
+      <span class="aadhar-dash">—</span>
+      <input class="aadhar-part" id="a3" type="text" maxlength="4" placeholder="XXXX"/>
+    </div>
+    <div style="font-size:11px;color:var(--gray-500);margin-top:4px">12-digit Aadhaar in XXXX-XXXX-XXXX format</div>
+  </div>
+  <div class="input-group">
+    <label>Password</label>
+    <input type="password" id="lpwd" placeholder="Enter your password"/>
+  </div>
+  <button class="btn btn-primary" style="width:100%;margin-bottom:16px" onclick="doLogin()">🔐 Verify &amp; Login</button>
+  <div class="divider">Test Aadhaar IDs — click any to autofill</div>
+  <div class="test-ids-box" id="test-ids">Loading…</div>
+  <p style="font-size:11px;color:var(--gray-500);text-align:center;margin-top:12px">Password for all IDs: <strong>demo123</strong></p>
+</div>
+</div>
+</div>
+
+<!-- ════ APP ════ -->
+<div id="page-app" class="page hidden">
+<div class="app-layout">
+  <div class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <button class="sidebar-item active" onclick="showSec('dashboard')" id="nav-dashboard"><span class="icon">📊</span>Dashboard</button>
+    <button class="sidebar-item" onclick="showSec('report')" id="nav-report"><span class="icon">📝</span>Report Issue</button>
+    <button class="sidebar-item" onclick="showSec('issues')" id="nav-issues"><span class="icon">📌</span>All Issues</button>
+    <button class="sidebar-item" onclick="showSec('myissues')" id="nav-myissues"><span class="icon">👤</span>My Reports</button>
+    <div class="sidebar-section">Info</div>
+    <button class="sidebar-item" onclick="showSec('ministries')" id="nav-ministries"><span class="icon">🏛️</span>Ministries</button>
+  </div>
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div id="sec-dashboard" class="fade-in">
+      <div class="page-header"><div class="page-title">📊 Overview Dashboard</div><div class="page-subtitle">Real-time civic issue tracking</div></div>
+      <div class="grid-4" style="margin-bottom:28px" id="stats-row"></div>
+      <div class="grid-2" style="margin-bottom:28px">
+        <div><div class="section-label">🔥 Top Priority Issues</div><div id="priority-issues"></div></div>
+        <div><div class="section-label">🏛️ Ministry Status</div><div id="ministry-summary"></div></div>
+      </div>
+      <div class="section-label">📈 Recent Activity</div>
+      <div id="recent-activity"></div>
+    </div>
+
+    <!-- REPORT -->
+    <div id="sec-report" class="hidden fade-in">
+      <div class="page-header"><div class="page-title">📝 Report an Issue</div><div class="page-subtitle">Photo · Description · GPS Location — all in one</div></div>
+      <div class="card complaint-form">
+
+        <div class="input-group">
+          <label>1 · Problem Type *</label>
+          <div class="problem-types" id="ptype-sel"></div>
+        </div>
+
+        <div id="min-assign" class="hidden" style="margin-bottom:18px">
+          <label>Assigned Ministry</label>
+          <div id="min-label"></div>
+        </div>
+
+        <div class="input-group">
+          <label>2 · Issue Title *</label>
+          <input type="text" id="f-title" placeholder="e.g. Deep pothole on MG Road near bus stop 14"/>
+        </div>
+
+        <div class="input-group">
+          <label>3 · Detailed Description *</label>
+          <textarea id="f-desc" placeholder="Describe the issue in detail — severity, size, how long it has existed, impact on daily life, nearby landmarks…"></textarea>
+        </div>
+
+        <div class="input-group">
+          <label>4 · 📷 Photo Evidence</label>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('f-photo').click()">
+            <div style="font-size:40px;margin-bottom:10px">📷</div>
+            <div style="font-size:14px;color:var(--gray-700)"><strong style="color:var(--saffron)">Click to upload photo</strong> or drag &amp; drop</div>
+            <div style="font-size:11px;color:var(--gray-500);margin-top:6px">PNG · JPG · WEBP — max 10 MB</div>
+          </div>
+          <input type="file" id="f-photo" accept="image/*" style="display:none" onchange="handlePhoto(event)"/>
+          <img id="f-preview" class="preview-img hidden"/>
+        </div>
+
+        <div class="input-group">
+          <label>5 · 📍 Location Tag</label>
+          <div class="location-bar" style="margin-bottom:8px">
+            <span style="font-size:20px">📍</span>
+            <span class="location-text" id="f-loc-gps">Tap "Get GPS" to auto-detect your location</span>
+            <button class="btn btn-secondary btn-sm" onclick="getGPS()">Get GPS</button>
+          </div>
+          <input type="text" id="f-loc-manual" placeholder="Or type address manually — e.g. Sector 12, Dwarka, New Delhi 110075"/>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="submitIssue()">🚀 Submit Report</button>
+          <button class="btn btn-secondary" onclick="resetForm()">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL ISSUES -->
+    <div id="sec-issues" class="hidden fade-in">
+      <div class="page-header"><div class="page-title">📌 All Reported Issues</div><div class="page-subtitle">Sorted by community votes · tap ▲ to upvote &amp; escalate</div></div>
+      <div class="filter-bar" id="filter-bar"></div>
+      <div id="all-issues-list"></div>
+    </div>
+
+    <!-- MY ISSUES -->
+    <div id="sec-myissues" class="hidden fade-in">
+      <div class="page-header"><div class="page-title">👤 My Reports</div><div class="page-subtitle">Issues you have submitted</div></div>
+      <div id="my-issues-list"></div>
+    </div>
+
+    <!-- MINISTRIES -->
+    <div id="sec-ministries" class="hidden fade-in">
+      <div class="page-header"><div class="page-title">🏛️ Ministry Dashboard</div><div class="page-subtitle">Issue assignments &amp; resolution rates by ministry</div></div>
+      <div class="grid-2" id="ministry-grid"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// ═══ CONSTANTS ═══════════════════════════════════════════════════════
+const AIDS=[
+  "2345 6789 0123","3456 7890 1234","4567 8901 2345","5678 9012 3456",
+  "6789 0123 4567","7890 1234 5678","8901 2345 6789","9012 3456 7890",
+  "1234 5678 9012","2468 1357 9024"
+];
+const PTYPES=[
+  {id:"pothole",    label:"Pothole",       icon:"🕳️"},
+  {id:"sewage",     label:"Open Sewage",   icon:"🚰"},
+  {id:"garbage",    label:"Garbage Dump",  icon:"🗑️"},
+  {id:"streetlight",label:"Street Light",  icon:"💡"},
+  {id:"waterlog",   label:"Waterlogging",  icon:"💧"}
+];
+const MINS={
+  pothole:     {name:"Ministry of Road Transport & Highways",dept:"MoRTH",       icon:"🛣️",bg:"#FFF7ED",ac:"#C2410C"},
+  sewage:      {name:"Ministry of Jal Shakti",               dept:"Water & San.",icon:"💧",bg:"#EFF6FF",ac:"#1D4ED8"},
+  garbage:     {name:"Ministry of Housing & Urban Affairs",  dept:"MoHUA",       icon:"🏙️",bg:"#F0FDF4",ac:"#15803D"},
+  streetlight: {name:"Ministry of Power",                    dept:"Electricity", icon:"⚡",bg:"#FAF5FF",ac:"#7C3AED"},
+  waterlog:    {name:"Ministry of Jal Shakti",               dept:"Water & San.",icon:"💧",bg:"#EFF6FF",ac:"#1D4ED8"}
+};
+// 7 stages
+const STAGES=[
+  {icon:"📋",name:"Reported",          desc:"Complaint submitted via FixItBharat portal"},
+  {icon:"🔍",name:"Under Review",      desc:"Complaint reviewed by local ward officer"},
+  {icon:"✅",name:"Verified On-Site",  desc:"Field inspector confirmed issue at location"},
+  {icon:"📨",name:"Ministry Notified", desc:"Assigned ministry received automated alert"},
+  {icon:"📄",name:"Work Order Issued", desc:"Dept. raised tender / work order for repair"},
+  {icon:"🔧",name:"Repair In Progress",desc:"Repair crew deployed — work actively ongoing"},
+  {icon:"🎉",name:"Resolved",          desc:"Issue fully fixed, citizen notified, case closed"}
+];
+
+// ═══ STATE ═══════════════════════════════════════════════════════════
+let CU=null, AF="all", selType=null, photoData=null, gpsLoc=null;
+const voted=new Set();
+
+function daysBefore(n){const d=new Date();d.setDate(d.getDate()-n);return d.toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
+
+let issues=[
+  {id:"ISS001",type:"pothole",title:"Massive pothole on NH-48 near Gurugram Toll",
+   desc:"A 3×2 ft pothole near the toll plaza. 4 tyre bursts this week. Extremely dangerous at night — no warning signs.",
+   loc:"NH-48, Gurugram, Haryana",votes:24,stage:5,by:"9012 3456 7890",date:"2026-02-20",photo:null,
+   sd:[18,16,14,12,9,3,null]},
+  {id:"ISS002",type:"sewage",title:"Open sewage overflow on Ring Road",
+   desc:"Cracked pipeline — raw sewage on footpath for 6 days. Residents reporting skin infections and severe odour.",
+   loc:"Ring Road, New Delhi",votes:19,stage:3,by:"3456 7890 1234",date:"2026-02-28",photo:null,
+   sd:[5,4,3,1,null,null,null]},
+  {id:"ISS003",type:"garbage",title:"Illegal garbage dump near Kendriya Vidyalaya",
+   desc:"30-ft heap near primary school gate. Rodents spotted daily. Children forced to walk through waste every morning.",
+   loc:"Sector 15, Noida, UP",votes:13,stage:2,by:"4567 8901 2345",date:"2026-03-01",photo:null,
+   sd:[4,2,1,null,null,null,null]},
+  {id:"ISS004",type:"streetlight",title:"All street lights out on MG Road 500m stretch",
+   desc:"Dark for 2 weeks. 3 accidents reported. CCTV also down. Residents scared to walk after dark.",
+   loc:"MG Road, Bengaluru, Karnataka",votes:9,stage:1,by:"5678 9012 3456",date:"2026-03-03",photo:null,
+   sd:[2,1,null,null,null,null,null]},
+  {id:"ISS005",type:"waterlog",title:"Chronic waterlogging blocks entire residential lane",
+   desc:"Standing water 4+ days after rain. Lane impassable. Dengue mosquito breeding risk rising rapidly.",
+   loc:"Salt Lake, Kolkata, WB",votes:6,stage:0,by:"6789 0123 4567",date:"2026-03-04",photo:null,
+   sd:[1,null,null,null,null,null,null]}
+];
+
+// ═══ UTILS ═══════════════════════════════════════════════════════════
+function pri(v){return v>=20?'critical':v>=12?'high':v>=6?'medium':'low';}
+function eta(v,s){if(s>=6)return 0;const b=Math.max(2,22-v),x=[0,-1,-2,-3,-5,-8,0][Math.min(s,6)];return Math.max(1,b+x);}
+function pct(s){return Math.round((s/6)*100);}
+function bcolor(p){return{critical:'#DC2626',high:'var(--saffron)',medium:'#F59E0B',low:'var(--green)'}[p];}
+
+// ═══ LOGIN ═══════════════════════════════════════════════════════════
+function renderTestIds(){
+  document.getElementById('test-ids').innerHTML=AIDS.map(id=>`
+    <div class="test-id-row" onclick="fillA('${id}')"><span>${id}</span><span class="badge-v">✓ Verified</span></div>`).join('');
+}
+function an(el,nxt){el.value=el.value.replace(/\D/g,'');if(el.value.length===4)document.getElementById(nxt)?.focus();}
+function fillA(id){const p=id.split(' ');['a1','a2','a3'].forEach((i,x)=>document.getElementById(i).value=p[x]);document.getElementById('lpwd').focus();}
+function getA(){return['a1','a2','a3'].map(i=>document.getElementById(i).value.trim()).join(' ');}
+
+function doLogin(){
+  const aa=getA(),pw=document.getElementById('lpwd').value;
+  const err=document.getElementById('lerr'),suc=document.getElementById('lsuc');
+  err.classList.add('hidden');suc.classList.add('hidden');
+  const d=aa.replace(/\s/g,'');
+  if(d.length!==12||!/^\d{12}$/.test(d)){err.textContent='❌ Invalid Aadhaar. Must be exactly 12 digits.';err.classList.remove('hidden');return;}
+  if(!AIDS.includes(aa)){err.textContent='❌ Aadhaar not in registry. Use a test ID below.';err.classList.remove('hidden');return;}
+  if(pw!=='demo123'){err.textContent='❌ Wrong password. Use: demo123';err.classList.remove('hidden');return;}
+  suc.textContent='✅ Aadhaar verified! Logging in…';suc.classList.remove('hidden');
+  CU=aa;
+  setTimeout(()=>{
+    document.getElementById('page-login').classList.replace('active','hidden');
+    document.getElementById('page-app').classList.replace('hidden','active');
+    document.getElementById('nav-auth').innerHTML=`
+      <div class="nav-user"><div class="avatar">${aa.slice(0,2)}</div><span>${aa.slice(0,4)} ****</span></div>
+      <button class="btn btn-logout" onclick="doLogout()">Logout</button>`;
+    showSec('dashboard');
+  },700);
+}
+function doLogout(){
+  CU=null;
+  document.getElementById('page-app').classList.replace('active','hidden');
+  document.getElementById('page-login').classList.replace('hidden','active');
+  document.getElementById('nav-auth').innerHTML='';
+  ['a1','a2','a3','lpwd'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('lerr').classList.add('hidden');
+  document.getElementById('lsuc').classList.add('hidden');
+}
+
+// ═══ SECTIONS ════════════════════════════════════════════════════════
+function showSec(n){
+  ['dashboard','report','issues','myissues','ministries'].forEach(s=>{
+    document.getElementById('sec-'+s).classList.add('hidden');
+    document.getElementById('nav-'+s).classList.remove('active');
+  });
+  document.getElementById('sec-'+n).classList.remove('hidden');
+  document.getElementById('nav-'+n).classList.add('active');
+  ({dashboard:renderDash,report:renderForm,issues:renderList,myissues:renderMine,ministries:renderMins})[n]?.();
+}
+
+// ═══ DASHBOARD ═══════════════════════════════════════════════════════
+function renderDash(){
+  const tot=issues.length,res=issues.filter(i=>i.stage>=6).length,crit=issues.filter(i=>pri(i.votes)==='critical').length,inp=issues.filter(i=>i.stage===5).length;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="stat-card orange"><div class="stat-icon orange">📋</div><div><div class="stat-value">${tot}</div><div class="stat-label">Total Issues</div></div></div>
+    <div class="stat-card red"><div class="stat-icon red">🔥</div><div><div class="stat-value">${crit}</div><div class="stat-label">Critical</div></div></div>
+    <div class="stat-card blue"><div class="stat-icon blue">🔧</div><div><div class="stat-value">${inp}</div><div class="stat-label">In Progress</div></div></div>
+    <div class="stat-card green"><div class="stat-icon green">✅</div><div><div class="stat-value">${res}</div><div class="stat-label">Resolved</div></div></div>`;
+
+  const top=[...issues].sort((a,b)=>b.votes-a.votes).slice(0,3);
+  document.getElementById('priority-issues').innerHTML=top.map(iss=>{
+    const p=pri(iss.votes),t=PTYPES.find(x=>x.id===iss.type),e=eta(iss.votes,iss.stage);
+    return `<div class="issue-card ${p}" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div class="issue-title">${t?.icon} ${iss.title}</div>
+        <div class="issue-meta"><span>📍 ${iss.loc}</span><span>👍 ${iss.votes} votes</span></div></div>
+        <span class="priority-badge ${p}">${p.toUpperCase()}</span>
+      </div>
+      <div style="margin-top:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+          <span style="font-weight:600">${STAGES[iss.stage].name}</span>
+          <span style="color:var(--saffron);font-weight:700">${pct(iss.stage)}%</span>
+        </div>
+        <div style="height:8px;background:var(--gray-200);border-radius:50px;overflow:hidden">
+          <div style="height:100%;width:${pct(iss.stage)}%;background:${bcolor(p)};border-radius:50px"></div>
+        </div>
+      </div>
+      <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#FFF7ED;color:var(--saffron);border-radius:50px;font-size:11px;font-weight:700;margin-top:8px">
+        ⏱️ Est. ${e} day${e!==1?'s':''} to resolve
+      </div>
+    </div>`;
+  }).join('');
+
+  const mMap={};issues.forEach(i=>{const m=MINS[i.type];if(!m)return;mMap[m.name]=mMap[m.name]||{...m,cnt:0};mMap[m.name].cnt++;});
+  document.getElementById('ministry-summary').innerHTML=Object.entries(mMap).map(([n,d])=>`
+    <div style="padding:12px 14px;background:${d.bg};border-radius:12px;margin-bottom:10px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:22px">${d.icon}</span>
+      <div style="flex:1"><div style="font-weight:700;font-size:12px;color:${d.ac}">${n.replace('Ministry of ','')}</div>
+        <div style="font-size:10px;color:var(--gray-500)">${d.cnt} issue${d.cnt!==1?'s':''}</div></div>
+      <span class="notif-dot"></span>
+    </div>`).join('');
+
+  const rec=[...issues].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('recent-activity').innerHTML=`<div style="display:flex;flex-direction:column;gap:10px">
+    ${rec.map(iss=>{const t=PTYPES.find(x=>x.id===iss.type);return `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-radius:12px;box-shadow:var(--shadow)">
+        <div style="width:36px;height:36px;background:var(--gray-100);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">${t?.icon}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:13px">${iss.title}</div>
+          <div style="font-size:11px;color:var(--gray-500);margin-top:2px">📍 ${iss.loc} · ${iss.date}</div></div>
+        <span class="priority-badge ${pri(iss.votes)}">${STAGES[iss.stage].name}</span>
+      </div>`;}).join('')}
+  </div>`;
+}
+
+// ═══ REPORT FORM ═════════════════════════════════════════════════════
+function renderForm(){
+  selType=null;photoData=null;gpsLoc=null;
+  document.getElementById('min-assign').classList.add('hidden');
+  document.getElementById('ptype-sel').innerHTML=PTYPES.map(t=>`
+    <button class="type-btn" id="tb-${t.id}" onclick="selT('${t.id}')">
+      <span style="font-size:26px">${t.icon}</span><span>${t.label}</span>
+    </button>`).join('');
+}
+function selT(id){
+  selType=id;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('tb-'+id).classList.add('selected');
+  const m=MINS[id];
+  document.getElementById('min-assign').classList.remove('hidden');
+  document.getElementById('min-label').innerHTML=`
+    <div class="ministry-pill" style="background:${m.bg}">
+      <span style="font-size:24px">${m.icon}</span>
+      <div><div style="font-weight:700;font-size:13px;color:${m.ac}">${m.name}</div>
+           <div style="font-size:11px;color:var(--gray-500)">${m.dept}</div></div>
+      <span class="notif-dot"></span>
+    </div>
+    <div style="font-size:11px;color:var(--gray-500);margin-top:6px">✉️ Ministry notified automatically upon submission</div>`;
+}
+function handlePhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    photoData=ev.target.result;
+    const p=document.getElementById('f-preview');p.src=photoData;p.classList.remove('hidden');
+    document.getElementById('upload-zone').innerHTML=`
+      <div style="font-size:13px;color:var(--green);font-weight:700">✅ ${f.name}</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-top:4px">${(f.size/1024).toFixed(0)} KB · Click to change</div>`;
+  };r.readAsDataURL(f);
+}
+function getGPS(){
+  document.getElementById('f-loc-gps').textContent='Fetching GPS location…';
+  if(!navigator.geolocation){useDemoLoc();return;}
+  navigator.geolocation.getCurrentPosition(
+    p=>{gpsLoc=`${p.coords.latitude.toFixed(5)}°N, ${p.coords.longitude.toFixed(5)}°E`;
+        document.getElementById('f-loc-gps').textContent='📍 '+gpsLoc;},
+    ()=>useDemoLoc()
+  );
+}
+function useDemoLoc(){
+  const ls=["Connaught Place, New Delhi","Koramangala, Bengaluru","Bandra West, Mumbai","Salt Lake, Kolkata","Kothrud, Pune"];
+  gpsLoc=ls[Math.floor(Math.random()*ls.length)]+' (demo)';
+  document.getElementById('f-loc-gps').textContent='📍 '+gpsLoc;
+}
+function resetForm(){
+  selType=null;photoData=null;gpsLoc=null;
+  ['f-title','f-desc','f-loc-manual'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-loc-gps').textContent='Tap "Get GPS" to auto-detect your location';
+  document.getElementById('f-preview').classList.add('hidden');
+  document.getElementById('min-assign').classList.add('hidden');
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('upload-zone').innerHTML=`
+    <div style="font-size:40px;margin-bottom:10px">📷</div>
+    <div style="font-size:14px;color:var(--gray-700)"><strong style="color:var(--saffron)">Click to upload photo</strong> or drag &amp; drop</div>
+    <div style="font-size:11px;color:var(--gray-500);margin-top:6px">PNG · JPG · WEBP — max 10 MB</div>`;
+}
+function submitIssue(){
+  const title=document.getElementById('f-title').value.trim();
+  const desc=document.getElementById('f-desc').value.trim();
+  if(!selType){toast('❗','Please select a problem type');return;}
+  if(!title){toast('❗','Please enter an issue title');return;}
+  if(!desc){toast('❗','Please add a description');return;}
+  const loc=gpsLoc||document.getElementById('f-loc-manual').value.trim()||'Location not specified';
+  // duplicate check
+  const sim=issues.find(i=>i.type===selType&&i.title.toLowerCase().split(' ').some(w=>w.length>4&&title.toLowerCase().includes(w)));
+  if(sim){
+    const k=sim.id+'_'+CU;
+    if(!voted.has(k)){sim.votes++;voted.add(k);}
+    toast('🔄',`Similar issue found! Votes boosted to ${sim.votes}`);
+    setTimeout(()=>showSec('issues'),1200);return;
+  }
+  const today=new Date().toISOString().slice(0,10);
+  const ni={id:'ISS'+String(issues.length+1).padStart(3,'0'),type:selType,title,desc,
+    loc,votes:1,stage:0,by:CU,date:today,photo:photoData,sd:[0,null,null,null,null,null,null]};
+  issues.unshift(ni);voted.add(ni.id+'_'+CU);
+  toast('✅',`Reported! Assigned to ${MINS[selType].name}`);
+  resetForm();setTimeout(()=>showSec('issues'),1200);
+}
+
+// ═══ ISSUE LIST ═══════════════════════════════════════════════════════
+function renderList(){
+  const fs=['all',...PTYPES.map(t=>t.id)];
+  document.getElementById('filter-bar').innerHTML=fs.map(f=>{
+    const t=PTYPES.find(x=>x.id===f);
+    return `<div class="filter-chip ${f===AF?'active':''}" onclick="setF('${f}')">${f==='all'?'🗂️ All Issues':`${t?.icon} ${t?.label}`}</div>`;
+  }).join('');
+  const filtered=AF==='all'?issues:issues.filter(i=>i.type===AF);
+  const sorted=[...filtered].sort((a,b)=>b.votes-a.votes);
+  if(!sorted.length){document.getElementById('all-issues-list').innerHTML=`<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-title">No issues in this category</div></div>`;return;}
+  document.getElementById('all-issues-list').innerHTML=sorted.map(i=>issHTML(i,true)).join('');
+}
+function setF(f){AF=f;renderList();}
+function renderMine(){
+  const m=issues.filter(i=>i.by===CU);
+  if(!m.length){document.getElementById('my-issues-list').innerHTML=`<div class="empty-state"><div class="empty-icon">📝</div><div class="empty-title">No reports yet</div><button class="btn btn-primary" style="margin-top:16px" onclick="showSec('report')">+ Report Issue</button></div>`;return;}
+  document.getElementById('my-issues-list').innerHTML=m.map(i=>issHTML(i,false)).join('');
+}
+
+// ═══ ISSUE CARD ═══════════════════════════════════════════════════════
+function issHTML(iss,showVote){
+  const p=pri(iss.votes),t=PTYPES.find(x=>x.id===iss.type),m=MINS[iss.type],e=eta(iss.votes,iss.stage);
+  const isV=voted.has(iss.id+'_'+CU);
+  const vMsg={critical:'🚨 Critical — auto-escalated to ministry!',high:'🔥 High-impact civic issue',medium:'📈 Growing community concern',low:'📋 Newly reported'}[p];
+
+  return `<div class="issue-card ${p} fade-in" id="card-${iss.id}">
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div style="flex:1">
+        <div class="issue-title">${t?.icon||''} ${iss.title}</div>
+        <div class="issue-meta">
+          <span>📍 ${iss.loc}</span>
+          <span>📅 ${iss.date}</span>
+          <span>🏛️ ${m?.name?.replace('Ministry of ','Min. of ')||''}</span>
+          ${iss.stage>=2?`<span class="verified-badge">✅ Field Verified</span>`:''}
+        </div>
+      </div>
+      <span class="priority-badge ${p}">${p.toUpperCase()}</span>
+    </div>
+
+    ${iss.desc?`<div style="font-size:13px;color:var(--gray-700);margin-top:10px;line-height:1.6;padding:10px 14px;background:var(--gray-50);border-radius:10px;border-left:3px solid ${bcolor(p)}">${iss.desc}</div>`:''}
+    ${iss.photo?`<img src="${iss.photo}" class="preview-img" style="max-height:200px;margin-top:10px"/>`:''}
+
+    ${progressHTML(iss,p,e)}
+
+    ${showVote?`
+    <div class="upvote-section">
+      <button class="upvote-btn ${isV?'voted':''}" onclick="doVote('${iss.id}')">
+        <span class="up-arrow">${isV?'✅':'▲'}</span>
+        <span class="up-count">${iss.votes}</span>
+        <span class="up-label">${isV?'VOTED':'UPVOTE'}</span>
+      </button>
+      <div>
+        <div class="vote-info-title" style="color:${bcolor(p)}">${vMsg}</div>
+        <div class="vote-info-sub">${iss.votes} citizen${iss.votes!==1?'s':''} affected · more votes = faster resolution</div>
+        ${!isV?`<div class="vote-cta">👆 Upvote to escalate this issue faster</div>`:`<div style="font-size:11px;color:var(--green);margin-top:4px;font-weight:600">✅ You have upvoted this issue</div>`}
+      </div>
+    </div>`:''}
+  </div>`;
+}
+
+// ═══ PROGRESS TRACKER HTML ════════════════════════════════════════════
+function progressHTML(iss,p,e){
+  const pc=pct(iss.stage), col=bcolor(p), done=iss.stage>=6;
+
+  const stIcons=STAGES.map((s,i)=>{
+    let cls='';
+    if(i<iss.stage)cls='s-done';
+    else if(i===iss.stage)cls='s-active';
+    const d=iss.sd[i]!=null?daysBefore(iss.sd[i]):'—';
+    return `<div class="pt-st ${cls}">
+      <div class="pt-st-dot">${i<iss.stage?'✓':s.icon}</div>
+      <div class="pt-st-name">${s.name}</div>
+      <div class="pt-st-date">${d}</div>
+    </div>`;
+  }).join('');
+
+  const rows=STAGES.map((s,i)=>{
+    let rc='r-pending',dc='d-pending',tv='Pending';
+    if(i<iss.stage){rc='r-done';dc='d-done';tv=iss.sd[i]!=null?daysBefore(iss.sd[i]):'Done';}
+    else if(i===iss.stage){rc='r-active';dc='d-active';tv=i>=6?'Completed':'Active now';}
+    return `<div class="pt-row ${rc}">
+      <div class="pt-dot ${dc}"></div>
+      <div style="flex:1">
+        <div class="pt-row-title">${s.icon} ${s.name}</div>
+        <div class="pt-row-desc">${s.desc}</div>
+      </div>
+      <span class="pt-row-time">${tv}</span>
+    </div>`;
+  }).join('');
+
+  return `<div class="progress-tracker">
+    <div class="pt-topbar">
+      <span class="pt-topbar-title">📊 Resolution Progress</span>
+      <span class="pt-eta ${done?'done':'live'}">${done?'✅ Fully Resolved':'⏱️ ~'+e+' day'+(e!==1?'s':'')+' remaining'}</span>
+    </div>
+    <div class="pt-bar-section">
+      <div class="pt-bar-labels">
+        <span style="font-weight:600;font-size:12px">Stage ${iss.stage+1} of 7: ${STAGES[iss.stage].name}</span>
+        <span style="font-weight:700;color:${col}">${pc}% complete</span>
+      </div>
+      <div class="pt-bar-track">
+        <div class="pt-bar-fill" style="width:${pc}%;background:${col}"></div>
+      </div>
+    </div>
+    <div class="pt-stages-row">${stIcons}</div>
+    <div class="pt-details">${rows}</div>
+  </div>`;
+}
+
+// ═══ VOTE ════════════════════════════════════════════════════════════
+function doVote(id){
+  const k=id+'_'+CU;
+  if(voted.has(k)){toast('ℹ️','You already upvoted this issue');return;}
+  const iss=issues.find(i=>i.id===id);if(!iss)return;
+  iss.votes++;voted.add(k);
+  const v=iss.votes;
+  if(v===5)toast('📈','Issue gaining attention — 5 citizens affected!');
+  else if(v===12)toast('🔥','High priority unlocked — 12 votes!');
+  else if(v===20)toast('🚨','CRITICAL — 20+ citizens! Ministry auto-alerted.');
+  else toast('👍',`Upvote recorded · ${v} total`);
+  renderList();
+}
+
+// ═══ MINISTRIES PAGE ═════════════════════════════════════════════════
+function renderMins(){
+  const mm={};
+  Object.entries(MINS).forEach(([k,m])=>{if(!mm[m.name])mm[m.name]={...m,issues:[]};});
+  issues.forEach(i=>{const m=MINS[i.type];if(m)mm[m.name].issues.push(i);});
+  document.getElementById('ministry-grid').innerHTML=Object.entries(mm).map(([name,data])=>{
+    const cnt=data.issues.length,res=data.issues.filter(i=>i.stage>=6).length,crit=data.issues.filter(i=>pri(i.votes)==='critical').length;
+    const rate=cnt>0?Math.round((res/cnt)*100):0;
+    return `<div class="ministry-card">
+      <div class="ministry-header">
+        <div class="ministry-icon-big" style="background:${data.bg}">${data.icon}</div>
+        <div><div class="ministry-name">${name}</div><div class="ministry-dept">${data.dept}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+        <div style="text-align:center;padding:10px;background:var(--gray-50);border-radius:8px">
+          <div style="font-size:22px;font-weight:800;font-family:'Baloo 2'">${cnt}</div><div style="font-size:10px;color:var(--gray-500)">Total</div></div>
+        <div style="text-align:center;padding:10px;background:#FEF2F2;border-radius:8px">
+          <div style="font-size:22px;font-weight:800;font-family:'Baloo 2';color:#DC2626">${crit}</div><div style="font-size:10px;color:var(--gray-500)">Critical</div></div>
+        <div style="text-align:center;padding:10px;background:var(--green-pale);border-radius:8px">
+          <div style="font-size:22px;font-weight:800;font-family:'Baloo 2';color:var(--green)">${res}</div><div style="font-size:10px;color:var(--gray-500)">Resolved</div></div>
+      </div>
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between">
+        <span>Resolution Rate</span><span style="color:${data.ac}">${rate}%</span></div>
+      <div class="mini-bar-track" style="height:10px"><div class="mini-bar-fill" style="width:${rate}%;background:${data.ac}"></div></div>
+      ${cnt>0?`<div style="margin-top:10px;font-size:12px;font-weight:600;color:${data.ac}">📨 ${cnt} notification${cnt!==1?'s':''} dispatched</div>`:'<div style="margin-top:10px;font-size:12px;color:var(--gray-500)">No issues assigned yet</div>'}
+      ${crit>0?`<div style="margin-top:8px;padding:8px 12px;background:#FEF2F2;border-radius:8px;font-size:12px;color:#DC2626;font-weight:600">⚠️ ${crit} critical issue${crit!==1?'s':''} need immediate action</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══ TOAST ════════════════════════════════════════════════════════════
+function toast(icon,text){
+  const t=document.getElementById('toast');
+  document.getElementById('ti').textContent=icon;
+  document.getElementById('tt').textContent=text;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ── INIT ──
+renderTestIds();
+</script>
+</body>
+</html>
