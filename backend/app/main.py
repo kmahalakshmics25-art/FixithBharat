@@ -11,11 +11,10 @@ def home():
 
 @app.post("/classify")
 async def classify(file: UploadFile = File(...)):
-    
+
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
 
     result = predict_image(image)
 
     return result
-
